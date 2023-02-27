@@ -1,0 +1,103 @@
+{% extends 'cliente/base.html' %}
+
+{% block content %}
+<div class="container mb-5">
+    <div class="row justify-content-center mt-1">
+        <div class="col-md-5 col-sm-12 p-4 text-center">
+            <h1>Pedido Realizado!</h1>
+            <p>Em 5 minutos, você poderá ir até a cantina para retirar o seu pedido.</p>
+            <a href="{% url 'indice' %}">Voltar para a Página Principal</a>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5 col-sm-12 text-center">
+            <h3 class="pb-3">Resumo do Pedido:</h3>
+            {% for item in itens.all %}
+                <p>{{ item.nome }} <span class="pl-3">R$ {{ item.preco }}</span></p>
+            {% endfor %}
+
+            <p class="font-weight-bold pt-4">Total: R${{ preco }}</p>
+        </div>
+    </div>
+    <div class="row justify-content-center pb-2 pt-5">
+        <div class="col-md-6 text-center">
+            <h3> Pague Agora ou na Hora da Retirada</h3>
+            </div>
+        </div>
+    <div class="row justify-content-center pb-5">
+        <div class="col-md-6 text-center">
+            <div id="paypal-button"></div>
+            </div>
+        </div>
+</div>
+
+<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+<script>
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+  paypal.Button.render({
+    // Configure environment
+    env: 'sandbox',
+    client: {
+      sandbox: 'Ad8GsURkcWcD0iR7bTd1cdoABqnlDfPbZu0cbdEBM-ZqSV9MgtMW225fkOVBOEYl6u_DNF9ontSra9SA',
+      production: 'demo_production_client_id'
+    },
+    // Customize button (optional)
+    locale: 'pt_BR',
+    style: {
+      size: 'large',
+      color: 'blue',
+      shape: 'rect',
+    },
+
+    // Enable Pay Now checkout flow (optional)
+    commit: true,
+
+    // Set up a payment
+    payment: function(data, actions) {
+      return actions.payment.create({
+        transactions: [{
+          amount: {
+            total: '{{ preco }}',
+            currency: 'BRL'
+          }
+        }]
+      });
+    },
+    // Execute the payment
+    onAuthorize: function(data, actions) {
+      return actions.payment.execute().then(function() {
+        // Show a confirmation message to the buyer
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'confirmar-pedido' pk %}",
+            beforeSend:function(request) {
+                request.setRequestHeader('X-CSRFToken',csrftoken)
+            },
+            data: JSON.stringify({'pago': true}),
+            success: function(data) {
+                window.location.href = '/confirmar-pagamento/'
+            }
+        })
+      });
+    }
+  }, '#paypal-button');
+
+</script>
+{% endblock content %}

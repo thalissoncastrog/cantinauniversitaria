@@ -1,0 +1,93 @@
+{% extends 'cliente/base.html' %}
+
+{% block content %}
+<div class="container mb-5">
+    <div class="row justify-content-center mt-1">
+        <div class="col-md-12 col-sm-12 p-4">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="pt-5">
+                    {% for bebida in bebidas %}
+                    {% if bebida.quantidade > 0 %}
+                    <div class="row">
+                        <div class="col-md-2 col-sm-12">
+                            <img class="rounded" src="{{ bebida.imagem.url }}" width="150" height="100" />
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <div class="d-flex flex-row">
+                                <div class="form-group form-check">
+                                    <input type="checkbox" name="itens[]" class="form-check-input"
+                                        value="{{ bebida.pk }}">
+                                    <label class="form-check-label">{{ bebida.nome }} R$</label>
+                                </div>
+                                <p class="fw-bold">{{ bebida.preco }}</p>
+                            </div>
+                            <p>{{ bebida.descricao }}</p>
+                        </div>
+                    </div>
+                    <hr />
+                    {%endif %}
+                    {% endfor %}
+                </div>
+
+                <div class="pt-5">
+                    {% for salgado in salgados %}
+                    {% if salgado.quantidade > 0 %}
+                    <div class="row mt-4">
+                        <div class="col-md-2 col-sm-12">
+                            <img class="rounded" src="{{ salgado.imagem.url }}" width="150" height="100" />
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <div class="d-flex flex-row">
+                                <div class="form-group form-check">
+                                    <input type="checkbox" name="itens[]" class="form-check-input"
+                                        value="{{ salgado.pk }}">
+                                    <label class="form-check-label">{{ salgado.nome }} R$</label>
+                                </div>
+                                <p class="fw-bold pl-5">{{ salgado.preco }}</p>
+                            </div>
+                            <p>{{ salgado.descricao }}</p>
+                        </div>
+                    </div>
+                    <hr />
+                    {%endif %}
+                    {% endfor %}
+                </div>
+
+                <div class="pt-5">
+                    {% for doce in doces %}
+                    {% if doce.quantidade > 0 %}
+                    <div class="row mt-4">
+                        <div class="col-md-2 col-sm-12">
+                            <img class="rounded" src="{{ doce.imagem.url }}" width="150" height="100" />
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <div class="d-flex flex-row">
+                                <div class="form-group form-check">
+                                    <input type="checkbox" name="itens[]" class="form-check-input"
+                                        value="{{ doce.pk }}">
+                                    <label class="form-check-label">{{ doce.nome }} R$</label>
+                                </div>
+                                <p class="fw-bold">{{ doce.preco }}</p>
+                            </div>
+                            <p>{{ doce.descricao }}</p>
+                        </div>
+                    </div>
+                    <hr />
+                    {%endif %}
+                    {% endfor %}
+                </div>
+                <div class="form-groupt pt-3">
+                    <label for="nome">Nome Completo</label>
+                    <input required class="form-control" type="text" placeholder="Seu Nome" name="nome">
+                </div>
+                <div class="form-groupt pt-3">
+                    <label for="email">E-Mail</label>
+                    <input required class="form-control" type="text" placeholder="exemplo@universidade.com" name="email">
+                </div>
+                <button class="btn btn-dark mt-5">Fazer Pedido!</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
